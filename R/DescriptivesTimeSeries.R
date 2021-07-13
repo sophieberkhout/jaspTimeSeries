@@ -21,7 +21,8 @@ DescriptivesTimeSeriesInternal <- function(jaspResults, dataset, options) {
 
 .tsStateSpacePlot <- function(jaspResults, dataset, options, ready) {
   stateSpacePlot <- createJaspPlot(title = "State Space Plot")
-  stateSpacePlot$dependOn(c("dependentVariable", "stateSpacePlot"))
+  stateSpacePlot$dependOn(c("stateSpacePlot", "addSmooth", "addSmoothCI", "addSmoothCIValue"))
+  stateSpacePlot$position <- 2
 
   jaspResults[["stateSpacePlot"]] <- stateSpacePlot
 
@@ -70,8 +71,9 @@ DescriptivesTimeSeriesInternal <- function(jaspResults, dataset, options) {
 }
 
 .tsACF <- function(jaspResults, dataset, options, ready){
-  acfPlot <- createJaspPlot(title = "Autocorrelation Function")
-  acfPlot$dependOn(c("dependentVariable", "acf"))
+  acfPlot <- createJaspPlot(title = "Autocorrelation Function Plot")
+  acfPlot$dependOn(c("acf", "addLinesCI", "addLinesCIValue"))
+  acfPlot$position <- 3
 
   jaspResults[["acfPlot"]] <- acfPlot
 
@@ -91,7 +93,8 @@ DescriptivesTimeSeriesInternal <- function(jaspResults, dataset, options) {
 
   dat <- data.frame(ACF = yACF$acf, Lag = yACF$lag)
 
-  yRange <- dat$ACF
+  xBreaks <- jaspGraphs::getPrettyAxisBreaks(dat$Lag)
+  yRange  <- dat$ACF
 
   plot <- ggplot2::ggplot()
   if(options$addLinesCI){
@@ -105,7 +108,6 @@ DescriptivesTimeSeriesInternal <- function(jaspResults, dataset, options) {
                             linetype = "dashed", color = "blue", data = dfSegment)
   }
 
-  xBreaks <- jaspGraphs::getPrettyAxisBreaks(dat$Lag)
   yBreaks <- jaspGraphs::getPrettyAxisBreaks(yRange)
 
   plot <- plot +
